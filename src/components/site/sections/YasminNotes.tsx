@@ -82,7 +82,7 @@ function NotesCarousel({ notes }: { notes: readonly YasminNote[] }) {
             key={note.id}
             data-note-card=""
             className={cn(
-              "reveal-on-scroll card-surface w-[min(78vw,20rem)] shrink-0 snap-center rounded-2xl border border-secondary/35 p-5",
+              "card-surface w-[min(78vw,20rem)] shrink-0 snap-center rounded-2xl border border-secondary/35 p-5",
               "md:w-auto md:min-w-0 md:p-6",
             )}
           >

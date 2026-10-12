@@ -34,6 +34,9 @@ async function snap(filePath, viewport, userAgent) {
     });
     await page.evaluate(() => document.fonts.ready);
     await page.evaluate(() => {
+      document
+        .querySelectorAll(".reveal-on-scroll")
+        .forEach((el) => el.classList.add("is-visible"));
       window.getSelection()?.removeAllRanges();
       document.querySelector("#yasmins-notes")?.scrollIntoView({
         behavior: "instant",
@@ -67,11 +70,14 @@ async function snapViewport(filePath, viewport, userAgent, scrollTo) {
     await page.waitForSelector(scrollTo, { visible: true, timeout: 10000 });
     await page.evaluate(() => document.fonts.ready);
     await page.evaluate((sel) => {
+      document
+        .querySelectorAll(".reveal-on-scroll")
+        .forEach((el) => el.classList.add("is-visible"));
       window.getSelection()?.removeAllRanges();
-      document.querySelector(sel)?.scrollIntoView({
-        behavior: "instant",
-        block: "end",
-      });
+      const el = document.querySelector(sel);
+      if (!el) return;
+      const top = el.getBoundingClientRect().top + window.scrollY;
+      window.scrollTo({ top: Math.max(0, top - 320), behavior: "instant" });
     }, scrollTo);
     await new Promise((resolve) => setTimeout(resolve, 400));
     await page.evaluate(() => window.getSelection()?.removeAllRanges());
