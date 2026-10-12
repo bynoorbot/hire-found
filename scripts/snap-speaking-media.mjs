@@ -88,7 +88,7 @@ async function main() {
     await page.goto(BASE_URL, { waitUntil: "load" });
     await page.evaluateHandle("document.fonts.ready");
     const desktopStyles = await assertStyled(page);
-    const desktopOut = path.join(OUT_DIR, "speaking_media_desktop_1440_onbrand.png");
+    const desktopOut = path.join(OUT_DIR, "speaking_media_desktop_1440_postmerge.png");
     const desktopScroll = await snapBand(page, desktopOut);
 
     // Mobile 390: tall enough for the stacked cards plus neighbors
@@ -105,7 +105,7 @@ async function main() {
     await page.goto(BASE_URL, { waitUntil: "load" });
     await page.evaluateHandle("document.fonts.ready");
     const mobileStyles = await assertStyled(page);
-    const mobileOut = path.join(OUT_DIR, "speaking_media_mobile_390_onbrand.png");
+    const mobileOut = path.join(OUT_DIR, "speaking_media_mobile_390_postmerge.png");
     const mobileScroll = await snapBand(page, mobileOut);
 
     console.log(
