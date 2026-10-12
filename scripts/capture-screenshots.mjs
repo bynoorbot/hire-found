@@ -26,8 +26,10 @@ function waitOnServer(url, timeoutMs = 15000) {
 }
 
 async function main() {
-  // Ensure fresh build
-  await pexec("npm run -s build", { cwd: process.cwd() });
+  // Ensure fresh build unless SKIP_BUILD=1 (reuse an existing out/)
+  if (process.env.SKIP_BUILD !== "1") {
+    await pexec("npm run -s build", { cwd: process.cwd() });
+  }
 
   // Stage a static root so that pages live under /hire-found/
   const root = "/tmp/hirefound-static-root";
@@ -64,21 +66,51 @@ async function main() {
         waitUntil: "domcontentloaded",
       });
       await page.waitForSelector("#markets", { timeout: 15000 });
+      await page.evaluate(async () => {
+        document
+          .querySelectorAll(".reveal-on-scroll")
+          .forEach((el) => el.classList.add("is-visible"));
+        if (document.fonts?.ready) await document.fonts.ready;
+      });
+      await new Promise((resolve) => setTimeout(resolve, 250));
       // Basic runtime checks
       const ok = await page.evaluate(() => {
         const html = document.documentElement;
+        const innerHtml = document.querySelector("html html, html[lang='ar']");
         const body = document.body;
         const noOverflow =
           document.documentElement.scrollWidth <=
           document.documentElement.clientWidth + 1;
+        const switcher = Array.from(document.querySelectorAll("a")).some(
+          (a) =>
+            (a.getAttribute("aria-label") || "").includes("language") ||
+            (a.getAttribute("aria-label") || "").includes("تبديل") ||
+            a.textContent?.trim() === "العربية" ||
+            a.textContent?.trim() === "English",
+        );
+        const is404 = /404|Off the Beaten Track|خرجت عن المسار/.test(
+          document.body.innerText,
+        );
         return {
           lang: html.lang,
-          dir: html.dir || body.dir || "",
+          innerLang: innerHtml?.getAttribute("lang") || "",
+          dir: html.dir || body.dir || innerHtml?.getAttribute("dir") || "",
           noOverflow,
           hasMarkets: !!document.getElementById("markets"),
+          hasHero: !!document.getElementById("hero"),
+          hasAbout: !!document.getElementById("about"),
+          hasServices: !!document.getElementById("services"),
+          hasHow: !!document.getElementById("how-it-works"),
+          hasSwitcher: switcher,
+          is404,
+          marketsText:
+            document.getElementById("markets")?.textContent?.slice(0, 80) || "",
         };
       });
       console.log(`Checked ${route.path}`, ok);
+      if (ok.is404) throw new Error(`404 page captured at ${route.path}`);
+      if (!ok.hasSwitcher) throw new Error(`Language switcher missing at ${route.path}`);
+      if (!ok.noOverflow) throw new Error(`Horizontal overflow at ${route.path}`);
       const outPath = `/opt/cursor/artifacts/hirefound-${route.name}-${size.suffix}.png`;
       await page.screenshot({ path: outPath, fullPage: true });
       await page.close();
