@@ -15,11 +15,25 @@ import {
   shouldSuppressShortcut,
   type ShortcutViewState,
 } from "@/lib/jobs/shortcuts";
+import { getCelebrationToast } from "@/lib/yasmin/greeting";
+import { withBasePath } from "@/lib/base-path";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { AuthViews } from "./auth-views";
 import { YasminDashboard } from "./dashboard";
 import { JobEditor, type JobEditorHandle } from "./job-editor";
 import { DeleteJobDialog } from "./delete-job-dialog";
+import { CelebrationButterfly } from "./celebration-butterfly";
+import { ReelEditorDialog } from "./reels/reel-editor-dialog";
+import {
+  fetchAllReels,
+  createReel,
+  updateReel,
+  deleteReel,
+  toggleReelActive,
+  type Reel,
+  type ReelFormData,
+} from "@/lib/reels";
+import { ExternalLink, Sparkles } from "lucide-react";
 
 type ViewMode = "dashboard" | "create" | "edit";
 
@@ -34,6 +48,12 @@ export function YasminPageClient() {
   const [deleteTarget, setDeleteTarget] = useState<Job | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [togglingId, setTogglingId] = useState<string | null>(null);
+  const [celebrating, setCelebrating] = useState(false);
+  const [reels, setReels] = useState<Reel[]>([]);
+  const [editingReel, setEditingReel] = useState<Reel | null>(null);
+  const [isReelDialogOpen, setIsReelDialogOpen] = useState(false);
+  const [savingReel, setSavingReel] = useState(false);
+  const [togglingReelId, setTogglingReelId] = useState<string | null>(null);
   const loadedRef = useRef(false);
   const editorRef = useRef<JobEditorHandle>(null);
   const prevAuthStatus = useRef(auth.status);
@@ -42,6 +62,15 @@ export function YasminPageClient() {
 
   const isEditorOpen = view !== "dashboard";
   const isModalOpen = Boolean(deleteTarget);
+
+  const refreshReels = useCallback(async () => {
+    try {
+      const list = await fetchAllReels();
+      setReels(list);
+    } catch (err) {
+      console.error("Failed to fetch reels:", err);
+    }
+  }, []);
 
   const refreshJobs = useCallback(async () => {
     if (refreshInFlight.current) return;
@@ -68,7 +97,10 @@ export function YasminPageClient() {
     if (prev === "authenticated" && auth.status !== "authenticated") {
       loadedRef.current = false;
       setJobs([]);
+      setReels([]);
       setEditingJob(null);
+      setEditingReel(null);
+      setIsReelDialogOpen(false);
       setDeleteTarget(null);
       setView("dashboard");
       setError(false);
@@ -83,7 +115,8 @@ export function YasminPageClient() {
     if (loadedRef.current) return;
     loadedRef.current = true;
     void refreshJobs();
-  }, [auth.status, refreshJobs]);
+    void refreshReels();
+  }, [auth.status, refreshJobs, refreshReels]);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -147,7 +180,8 @@ export function YasminPageClient() {
           setEditingJob(null);
         } else {
           await createJob(formData);
-          toast.success("Listing published.");
+          setCelebrating(true);
+          toast.success(getCelebrationToast("create"));
           setView("dashboard");
           await refreshJobs();
         }
@@ -173,6 +207,12 @@ export function YasminPageClient() {
       setJobs((prev) =>
         prev.map((j) => (j.id === job.id ? { ...j, isActive: next } : j)),
       );
+      if (next) {
+        setCelebrating(true);
+        toast.success(getCelebrationToast("activate"));
+      } else {
+        toast.info("Listing is now quiet (inactive).");
+      }
     } catch (err) {
       console.error("Failed to toggle job active status:", err);
       toast.error("Failed to update job status. Please try again.");
@@ -198,6 +238,83 @@ export function YasminPageClient() {
     }
   }, [deleteTarget]);
 
+  const handleNewReel = useCallback(() => {
+    setEditingReel(null);
+    setIsReelDialogOpen(true);
+  }, []);
+
+  const handleEditReel = useCallback((reel: Reel) => {
+    setEditingReel(reel);
+    setIsReelDialogOpen(true);
+  }, []);
+
+  const handleSaveReel = useCallback(
+    async (formData: ReelFormData) => {
+      setSavingReel(true);
+      try {
+        if (editingReel) {
+          await updateReel(editingReel.id, formData);
+          toast.success("Featured reel updated.");
+        } else {
+          await createReel(formData);
+          setCelebrating(true);
+          toast.success("Featured reel added to your studio!");
+        }
+        await refreshReels();
+      } catch (err) {
+        console.error("Failed to save reel:", err);
+        throw err;
+      } finally {
+        setSavingReel(false);
+      }
+    },
+    [editingReel, refreshReels],
+  );
+
+  const handleDeleteReel = useCallback(
+    async (reel: Reel) => {
+      const confirmed = window.confirm(`Delete "${reel.title}" from your studio?`);
+      if (!confirmed) return;
+      try {
+        await deleteReel(reel.id);
+        setReels((prev) => prev.filter((r) => r.id !== reel.id));
+        toast.success("Reel removed from studio.");
+      } catch (err) {
+        console.error("Failed to delete reel:", err);
+        toast.error("Failed to delete reel. Please try again.");
+      }
+    },
+    [],
+  );
+
+  const handleToggleReelActive = useCallback(
+    async (reel: Reel) => {
+      setTogglingReelId(reel.id);
+      const next = !reel.isActive;
+      setReels((prev) =>
+        prev.map((r) => (r.id === reel.id ? { ...r, isActive: next } : r)),
+      );
+      try {
+        await toggleReelActive(reel.id, reel.isActive);
+        if (next) {
+          setCelebrating(true);
+          toast.success("Reel is now active on public site.");
+        } else {
+          toast.info("Reel is now hidden from public site.");
+        }
+      } catch (err) {
+        console.error("Failed to toggle reel status:", err);
+        setReels((prev) =>
+          prev.map((r) => (r.id === reel.id ? { ...r, isActive: reel.isActive } : r)),
+        );
+        toast.error("Failed to update reel status. Please try again.");
+      } finally {
+        setTogglingReelId(null);
+      }
+    },
+    [],
+  );
+
   if (auth.status !== "authenticated" || !auth.user) {
     return (
       <AuthViews
@@ -214,47 +331,82 @@ export function YasminPageClient() {
 
   return (
     <>
+      {/* Celebratory Butterfly Flight on Create/Activate */}
+      <CelebrationButterfly
+        show={celebrating}
+        onComplete={() => setCelebrating(false)}
+      />
+
+      {/* Atelier Navigation */}
       <nav
-        className="nav-glass fixed top-0 right-0 left-0 z-50 pt-[env(safe-area-inset-top)]"
+        className="nav-glass fixed top-0 right-0 left-0 z-50 border-b border-[#D4A574]/20 backdrop-blur-md pt-[env(safe-area-inset-top)]"
         aria-label="Admin navigation"
       >
-        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
-          <button
-            type="button"
-            onClick={() => {
-              if (view === "dashboard") return;
-              leaveEditor(handleCancelEditor);
-            }}
-            disabled={view !== "dashboard" && saving}
-            className="font-accent text-xl text-primary touch-manipulation select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60"
-          >
-            Yasmin&apos;s Space
-          </button>
-          <button
-            type="button"
-            onClick={() => leaveEditor(() => void auth.signOut())}
-            disabled={view !== "dashboard" && saving}
-            className="inline-flex min-h-11 touch-manipulation items-center px-3 text-sm font-semibold text-primary select-none active:bg-warm-dark focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60"
-            aria-label="Sign out"
-          >
-            Sign Out
-          </button>
+        <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => {
+                if (view === "dashboard") return;
+                leaveEditor(handleCancelEditor);
+              }}
+              disabled={view !== "dashboard" && saving}
+              className="flex items-center gap-2 font-accent text-xl font-normal text-[#7A1E4A] touch-manipulation select-none transition-transform duration-150 ease-out active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60"
+            >
+              <span>Yasmin&apos;s Space</span>
+            </button>
+            <span className="hidden items-center gap-1 rounded-full border border-[#D4A574]/30 bg-[#FCF9F5] px-2.5 py-0.5 text-[11px] font-medium text-[#7A1E4A] sm:inline-flex">
+              <Sparkles className="size-3 text-amber-500" aria-hidden="true" />
+              <span>Yasmin&apos;s Studio</span>
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            <a
+              href={withBasePath("/")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold text-[#5E534C] transition-colors hover:bg-[#F3EBE3] hover:text-[#7A1E4A] sm:inline-flex"
+            >
+              <ExternalLink className="size-3" aria-hidden="true" />
+              <span>Live Site</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={() => leaveEditor(() => void auth.signOut())}
+              disabled={view !== "dashboard" && saving}
+              className="inline-flex min-h-9 touch-manipulation items-center rounded-full border border-[#D4A574]/30 bg-white/80 px-3.5 text-xs font-semibold text-[#7A1E4A] shadow-2xs select-none transition-all duration-150 ease-out hover:border-[#D4A574] hover:bg-[#FCF9F5] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary disabled:opacity-60"
+              aria-label="Sign out"
+            >
+              Sign Out
+            </button>
+          </div>
         </div>
       </nav>
 
-      <div className="pt-[var(--site-nav-offset)]">
+      <div className="pt-[calc(4.5rem+env(safe-area-inset-top,0px))]">
         {view === "dashboard" ? (
           <YasminDashboard
             user={auth.user}
             jobs={jobs}
             loading={loading}
             error={error}
-            onRefresh={() => void refreshJobs()}
+            onRefresh={() => {
+              void refreshJobs();
+              void refreshReels();
+            }}
             onNewJob={handleNewJob}
             onEdit={handleEdit}
             onDelete={setDeleteTarget}
             onToggleActive={(job) => void handleToggleActive(job)}
             togglingId={togglingId}
+            reels={reels}
+            onNewReel={handleNewReel}
+            onEditReel={handleEditReel}
+            onDeleteReel={(reel) => void handleDeleteReel(reel)}
+            onToggleReelActive={(reel) => void handleToggleReelActive(reel)}
+            togglingReelId={togglingReelId}
           />
         ) : (
           <JobEditor
@@ -277,6 +429,16 @@ export function YasminPageClient() {
         }}
         onConfirm={() => void handleConfirmDelete()}
       />
+
+      <ReelEditorDialog
+        open={isReelDialogOpen}
+        onOpenChange={setIsReelDialogOpen}
+        reel={editingReel}
+        onSave={handleSaveReel}
+        saving={savingReel}
+      />
     </>
   );
 }
+
+export default YasminPageClient;

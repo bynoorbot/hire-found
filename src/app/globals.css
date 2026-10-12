@@ -2,21 +2,20 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-@custom-variant dark (&:is(.dark *));
-
 @theme inline {
 
     /* HireFound - Stage C direction: linen, burgundy, gold */
-    --color-warm: #FCF9F5;
-    --color-warm-dark: #F3EBE3;
+    --color-warm: var(--hf-warm);
+    --color-warm-dark: var(--hf-warm-dark);
     --color-primary: #7A1E4A;
-    --color-primary-light: #963B63;
-    --color-primary-dark: #5E1639;
+    --color-primary-light: var(--hf-primary-light);
+    --color-primary-dark: var(--hf-primary-dark);
     --color-secondary: #D4A574;
     --color-secondary-light: #E0BA92;
     --color-dark: #1A1A2E;
     --color-dark-light: #252540;
-    --color-text-main: #2D2926;
+    --color-text-main: var(--hf-text-main);
+    --color-linen: #FCF9F5;
     --color-muted: #5E534C;
     --color-whatsapp: #25D366;
     --color-success: #7A9E7E;
@@ -72,10 +71,19 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+    --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-out-smooth: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 :root {
+    --ease-snappy: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-out-smooth: cubic-bezier(0.16, 1, 0.3, 1);
     --site-nav-offset: calc(4rem + env(safe-area-inset-top, 0px));
+    --hf-warm: #FCF9F5;
+    --hf-warm-dark: #F3EBE3;
+    --hf-text-main: #2D2926;
+    --hf-primary-light: #963B63;
+    --hf-primary-dark: #5E1639;
     --background: #FCF9F5;
     --foreground: #2D2926;
     --card: #FFFCF8;
@@ -111,46 +119,12 @@
     --sidebar-ring: oklch(0.708 0 0);
 }
 
-.dark {
-    --background: oklch(0.145 0 0);
-    --foreground: oklch(0.985 0 0);
-    --card: oklch(0.205 0 0);
-    --card-foreground: oklch(0.985 0 0);
-    --popover: oklch(0.205 0 0);
-    --popover-foreground: oklch(0.985 0 0);
-    --primary: oklch(0.922 0 0);
-    --primary-foreground: oklch(0.205 0 0);
-    --secondary: oklch(0.269 0 0);
-    --secondary-foreground: oklch(0.985 0 0);
-    --muted: oklch(0.269 0 0);
-    --muted-foreground: oklch(0.708 0 0);
-    --accent: oklch(0.269 0 0);
-    --accent-foreground: oklch(0.985 0 0);
-    --destructive: oklch(0.704 0.191 22.216);
-    --border: oklch(1 0 0 / 10%);
-    --input: oklch(1 0 0 / 15%);
-    --ring: oklch(0.556 0 0);
-    --chart-1: oklch(0.87 0 0);
-    --chart-2: oklch(0.556 0 0);
-    --chart-3: oklch(0.439 0 0);
-    --chart-4: oklch(0.371 0 0);
-    --chart-5: oklch(0.269 0 0);
-    --sidebar: oklch(0.205 0 0);
-    --sidebar-foreground: oklch(0.985 0 0);
-    --sidebar-primary: oklch(0.488 0.243 264.376);
-    --sidebar-primary-foreground: oklch(0.985 0 0);
-    --sidebar-accent: oklch(0.269 0 0);
-    --sidebar-accent-foreground: oklch(0.985 0 0);
-    --sidebar-border: oklch(1 0 0 / 10%);
-    --sidebar-ring: oklch(0.556 0 0);
-}
-
 @utility nav-glass {
-  /* Opaque linen so the bar stays warm over the dark hero. */
-  background-color: rgb(252 249 245 / 0.97);
+  /* Opaque surface so the bar stays solid over the hero. */
+  background-color: color-mix(in srgb, var(--hf-warm) 97%, transparent);
   -webkit-backdrop-filter: blur(16px);
   backdrop-filter: blur(16px);
-  border-bottom: 1px solid color-mix(in srgb, #7a1e4a 14%, transparent);
+  border-bottom: 1px solid var(--border);
 }
 
 @keyframes nav-mobile-card-in {
@@ -178,7 +152,7 @@
 }
 
 @utility card-surface {
-  background-color: #fffcf8;
+  background-color: var(--card);
   border-radius: 16px;
   box-shadow: 0 12px 32px rgba(45, 41, 38, 0.08);
 }
@@ -190,33 +164,35 @@
   padding: 0.5rem 1.25rem;
   border-radius: 9999px;
   border: 1px solid transparent;
-  background-color: color-mix(in srgb, #7a1e4a 8%, #fcf9f5);
-  color: #5e534c;
+  background-color: color-mix(in srgb, var(--primary) 8%, var(--hf-warm));
+  color: var(--muted);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
   touch-action: manipulation;
+  transition: transform 140ms var(--ease-snappy, cubic-bezier(0.23, 1, 0.32, 1)), background-color 140ms ease-out, color 140ms ease-out, border-color 140ms ease-out;
 
   @media (hover: hover) and (pointer: fine) {
     &:hover {
-      background-color: color-mix(in srgb, #7a1e4a 14%, #fcf9f5);
-      color: #7a1e4a;
+      background-color: color-mix(in srgb, var(--primary) 14%, var(--hf-warm));
+      color: var(--primary);
     }
   }
 
   &:active {
-    background-color: color-mix(in srgb, #7a1e4a 18%, #fcf9f5);
+    transform: scale(0.97);
+    background-color: color-mix(in srgb, var(--primary) 18%, var(--hf-warm));
   }
 
   &.active,
   &[data-state="active"] {
-    background-color: #7a1e4a;
-    color: #fcf9f5;
-    border-color: #7a1e4a;
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    border-color: var(--primary);
   }
 
   &:focus-visible {
-    outline: 2px solid #7a1e4a;
+    outline: 2px solid var(--primary);
     outline-offset: 2px;
   }
 }
@@ -324,6 +300,14 @@
   }
 }
 
+/* View Transitions tune for booking CTA → dialog */
+@media (prefers-reduced-motion: no-preference) {
+  ::view-transition-group(booking-cta) {
+    animation-timing-function: cubic-bezier(0.2, 0.9, 0.2, 1);
+    animation-duration: 0.35s;
+  }
+}
+
 /* How It Works: scroll-driven journey line and step reveals */
 @keyframes hiw-line-fill {
   from {
@@ -360,75 +344,90 @@
   }
 }
 
-/* Default static fallback: no special opacity or transforms. */
-.reveal-on-scroll {}
+/* Scroll reveal choreography */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .hiw-list {}
 .hiw-step {}
 .hiw-dot {}
 
-@supports (animation-timeline: view()) {
-  /* Vertical line fill overlay */
-  .hiw-list {
-    position: relative;
-    /* keeps children dots above overlay */
-    isolation: isolate;
-  }
-  .hiw-list::after {
-    content: "";
-    position: absolute;
-    left: -1px; /* aligns over the border-left */
-    top: 0;
-    width: 2px;
-    height: 0%;
-    background: var(--primary);
-    border-radius: 9999px;
-    z-index: -1; /* sit behind dots */
-    animation: hiw-line-fill linear both;
-    animation-timeline: view();
-    /* Fill as the whole list scrolls from entry to near full cover */
-    animation-range: entry 0% cover 90%;
+@utility section-divider {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--secondary) 35%, transparent) 50%, transparent 100%);
+}
+
+@utility card-interactive-sheen {
+  transition: transform 240ms cubic-bezier(0.23, 1, 0.32, 1),
+              box-shadow 240ms ease-out,
+              border-color 240ms ease-out,
+              background-color 240ms ease-out;
+
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      transform: translateY(-2px);
+      border-color: color-mix(in srgb, var(--primary) 30%, var(--secondary));
+      box-shadow: 0 16px 36px rgba(122, 30, 74, 0.1);
+    }
   }
 
-  /* Use a named view timeline so children sync to each step's visibility */
-  .hiw-step {
-    view-timeline-name: --hiw-step;
-    view-timeline-axis: block;
-    opacity: 0;
-    transform: translateY(12px);
-    animation: hiw-step-reveal 1 both cubic-bezier(0.16, 1, 0.3, 1);
-    animation-timeline: --hiw-step;
-    animation-range: entry 15% cover 35%;
+  &:active {
+    transform: scale(0.99);
   }
+}
 
-  .hiw-dot {
-    animation: hiw-dot-activate 1 both ease-out;
-    animation-timeline: --hiw-step;
-    animation-range: entry 5% cover 30%;
-    will-change: transform, background-color, box-shadow;
-  }
-
-  .reveal-on-scroll {
+/* Route and state view transitions */
+@keyframes hf-route-in {
+  from {
     opacity: 0;
     transform: translateY(10px);
-    animation: hiw-step-reveal 1 both cubic-bezier(0.16, 1, 0.3, 1);
-    animation-timeline: view();
-    animation-range: entry 10% cover 35%;
+    filter: blur(2px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.page-transition-enter,
+.job-view-transition {
+  animation: hf-route-in 240ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform, filter;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .reveal-on-scroll,
   .hiw-step,
   .hiw-dot,
-  .hiw-list::after {
+  .hiw-list::after,
+  .page-transition-enter,
+  .job-view-transition {
     animation: none !important;
     transition: none !important;
   }
   .reveal-on-scroll,
-  .hiw-step {
+  .hiw-step,
+  .page-transition-enter,
+  .job-view-transition {
     opacity: 1 !important;
     transform: none !important;
     filter: none !important;
+  }
+  .card-interactive-sheen {
+    transform: none !important;
   }
 }
 
@@ -523,4 +522,266 @@
   font-style: normal;
   content: attr(data-placeholder);
   pointer-events: none;
+}
+
+/* Vacancies empty state: gentle waiting-room motion */
+@keyframes vacancies-empty-bob {
+  0%,
+  100% {
+    transform: translate(98px, 28px) translateY(0);
+  }
+  50% {
+    transform: translate(98px, 28px) translateY(-3px);
+  }
+}
+
+@keyframes vacancies-empty-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+.vacancies-empty-butterfly {
+  transform-origin: 8px 14px;
+  animation: vacancies-empty-bob 3.2s ease-in-out infinite;
+}
+
+.vacancies-empty-nameplate {
+  transform-origin: 80px 40px;
+  animation: vacancies-empty-sway 4s ease-in-out infinite;
+}
+
+/* HireFound Editorial Illustration System: Motion choreography */
+@keyframes hf-ill-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes hf-ill-sway {
+  0%,
+  100% {
+    transform: rotate(-2deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+@keyframes hf-ill-steam {
+  0% {
+    opacity: 0.25;
+    transform: translateY(0) scaleX(1);
+  }
+  50% {
+    opacity: 0.65;
+    transform: translateY(-3px) scaleX(1.1);
+  }
+  100% {
+    opacity: 0.25;
+    transform: translateY(0) scaleX(1);
+  }
+}
+
+@keyframes hf-ill-pulse-glow {
+  0%,
+  100% {
+    opacity: 0.3;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes hf-butterfly-hover-flutter {
+  0%,
+  100% {
+    transform: scaleX(1);
+  }
+  25% {
+    transform: scaleX(0.7) rotate(-3deg);
+  }
+  50% {
+    transform: scaleX(0.9) rotate(2deg);
+  }
+  75% {
+    transform: scaleX(0.65) rotate(-2deg);
+  }
+}
+
+.hf-ill-bob {
+  animation: hf-ill-bob 3.2s ease-in-out infinite;
+}
+
+.hf-ill-sway {
+  animation: hf-ill-sway 4s ease-in-out infinite;
+}
+
+.hf-ill-steam {
+  animation: hf-ill-steam 2.8s ease-in-out infinite;
+}
+
+.hf-ill-pulse-glow {
+  animation: hf-ill-pulse-glow 3.5s ease-in-out infinite;
+}
+
+.group:hover .hf-butterfly-flutter,
+.hf-butterfly-flutter:hover {
+  animation: hf-butterfly-hover-flutter 0.4s cubic-bezier(0.16, 1, 0.3, 1) 1;
+}
+
+@keyframes hf-butterfly-drift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-1.5deg);
+  }
+  50% {
+    transform: translateY(-3px) rotate(1.5deg);
+  }
+}
+
+.hf-butterfly-drift {
+  animation: hf-butterfly-drift 3.5s ease-in-out infinite;
+}
+
+/* Heartbeat pulse for footer credit love icon (subtle 2.4s pulse) */
+@keyframes hf-heart-beat {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  14% {
+    transform: scale(1.18);
+  }
+  28% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.12);
+  }
+  70% {
+    transform: scale(1);
+  }
+}
+
+.hf-heart-beat {
+  display: inline-block;
+  transform-origin: center;
+  animation: hf-heart-beat 2.4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vacancies-empty-butterfly,
+  .vacancies-empty-nameplate,
+  .hf-ill-bob,
+  .hf-ill-sway,
+  .hf-ill-steam,
+  .hf-ill-pulse-glow,
+  .hf-butterfly-flutter,
+  .hf-butterfly-drift,
+  .hf-heart-beat {
+    animation: none !important;
+  }
+}
+
+
+/* Yasmin's Space: a personal, lively world apart from the public site. */
+@keyframes ys-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ys-drift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-5px) rotate(3deg);
+  }
+}
+
+@keyframes ys-glow-breathe {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.85;
+    transform: scale(1.06);
+  }
+}
+
+.ys-enter {
+  animation: ys-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+  animation-delay: var(--ys-delay, 0ms);
+}
+
+.ys-butterfly {
+  animation: ys-drift 4.5s ease-in-out infinite;
+}
+
+.ys-ambient {
+  background:
+    radial-gradient(
+      closest-side,
+      color-mix(in srgb, var(--primary) 14%, transparent),
+      transparent
+    ),
+    radial-gradient(
+      closest-side at 70% 75%,
+      color-mix(in srgb, var(--secondary) 22%, transparent),
+      transparent
+    );
+  animation: ys-glow-breathe 7s ease-in-out infinite;
+}
+
+.ys-card {
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .ys-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--primary) 30%, var(--secondary));
+    box-shadow: 0 16px 36px rgba(122, 30, 74, 0.14);
+  }
+}
+
+.ys-card:active {
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ys-enter,
+  .ys-butterfly,
+  .ys-ambient {
+    animation: none !important;
+  }
+  .ys-card,
+  .ys-card:hover,
+  .ys-card:active {
+    transform: none;
+  }
 }

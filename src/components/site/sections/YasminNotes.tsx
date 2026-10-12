@@ -4,20 +4,36 @@ import { useRef } from "react";
 import { ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { YASMIN_NOTES, type YasminNote } from "@/lib/yasmin/notes";
 import { cn } from "@/lib/utils";
+import { useScrollReveal } from "@/hooks/use-scroll-reveal";
 
 export function YasminNotes() {
+  const containerRef = useScrollReveal<HTMLElement>({
+    selector: ".reveal-on-scroll",
+    staggerMs: 65,
+  });
+
   return (
     <section
       id="yasmins-notes"
-      className="bg-warm px-6 pt-8 pb-20 lg:pt-10 lg:pb-28"
+      ref={containerRef}
+      className="relative px-6 pt-8 pb-20 lg:pt-10 lg:pb-28"
     >
+      <div
+        className="section-divider mx-auto mb-16 max-w-6xl opacity-50"
+        aria-hidden="true"
+      />
       <div className="mx-auto max-w-6xl">
-        <h2 className="font-accent bg-transparent text-4xl tracking-[-0.02em] text-balance text-primary md:text-5xl">
-          Yasmin&apos;s Notes
-        </h2>
-        <p className="mt-4 max-w-[36rem] text-lg text-muted">
-          Short advice from real posts: her words, with a quick gloss.
-        </p>
+        <div className="reveal-on-scroll">
+          <span className="text-xs font-semibold tracking-[0.14em] text-secondary uppercase">
+            From her LinkedIn
+          </span>
+          <h2 className="font-accent mt-2 bg-transparent text-4xl tracking-[-0.02em] text-balance text-primary md:text-5xl">
+            Yasmin&apos;s Notes
+          </h2>
+          <p className="mt-4 max-w-[36rem] text-lg text-muted">
+            Short advice from real posts: her words, with a quick gloss.
+          </p>
+        </div>
 
         <NotesCarousel notes={YASMIN_NOTES} />
 
@@ -66,12 +82,12 @@ function NotesCarousel({ notes }: { notes: readonly YasminNote[] }) {
             key={note.id}
             data-note-card=""
             className={cn(
-                "card-surface w-[min(78vw,20rem)] shrink-0 snap-center rounded-2xl border border-border p-5",
+              "reveal-on-scroll card-surface w-[min(78vw,20rem)] shrink-0 snap-center rounded-2xl border border-secondary/35 p-5",
               "md:w-auto md:min-w-0 md:p-6",
             )}
           >
             <div className="mb-3 flex items-center gap-2">
-              <span className="inline-flex items-center rounded-full border border-border bg-accent px-3 py-1 text-xs font-semibold text-accent-foreground">
+              <span className="inline-flex items-center rounded-full border border-primary/15 bg-warm px-3 py-1 text-xs font-semibold text-primary">
                 {note.tag}
               </span>
               <a
