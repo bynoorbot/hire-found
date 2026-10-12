@@ -16,7 +16,14 @@ export const metadata: Metadata = {
       "استعرض الوظائف المتاحة واعثر على فرصتك القادمة مع HireFound.",
     url: "https://hirefound.com/ar/jobs/",
     siteName: "HireFound",
-    images: ["https://hirefound.com/assets/yasmin-blasi.png"],
+    images: [
+      {
+        url: "https://hirefound.com/assets/og-jobs.png",
+        width: 1200,
+        height: 630,
+        alt: "HireFound - الوظائف المتاحة والتوفيق المهني",
+      },
+    ],
     type: "website",
   },
   twitter: {
@@ -24,7 +31,7 @@ export const metadata: Metadata = {
     title: "لقِ توفيقك - الوظائف المتاحة | HireFound",
     description:
       "استعرض الوظائف المتاحة واعثر على فرصتك القادمة مع HireFound.",
-    images: ["https://hirefound.com/assets/yasmin-blasi.png"],
+    images: ["https://hirefound.com/assets/og-jobs.png"],
   },
 };
 
@@ -45,7 +52,10 @@ export default function JobsPageAr() {
         تخطَّ إلى المحتوى
       </a>
       <SiteNav />
-      <main id="main-content" className="pt-[calc(var(--site-nav-offset)+1.5rem)]">
+      <main
+        id="main-content"
+        className="page-transition-enter pt-[calc(var(--site-nav-offset)+1.5rem)]"
+      >
         <Suspense fallback={<JobsFallback />}>
           <JobsPageClient />
         </Suspense>

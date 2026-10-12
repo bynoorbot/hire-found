@@ -54,14 +54,21 @@ export const metadata: Metadata = {
     description: "نوفّق بين الناس والفرص الصحيحة في الأردن والخليج.",
     url: "https://hirefound.com/ar/",
     siteName: "HireFound",
-    images: ["https://hirefound.com/assets/yasmin-blasi.png"],
+    images: [
+      {
+        url: "https://hirefound.com/assets/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "HireFound بإدارة Yasmin Blasi - البحث التنفيذي والتوظيف",
+      },
+    ],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
     title: "HireFound - لقِ توفيقك",
     description: "نوفّق بين الناس والفرص الصحيحة في الأردن والخليج.",
-    images: ["https://hirefound.com/assets/yasmin-blasi.png"],
+    images: ["https://hirefound.com/assets/og-image.png"],
   },
 };
 
@@ -78,7 +85,7 @@ export default function RootLayoutAr({ children }: LayoutProps<"/ar">) {
         notoSansArabic.variable,
       )}
     >
-      <body className="overflow-x-hidden bg-warm font-sans text-text-main antialiased">
+      <body className="overflow-x-hidden bg-background font-sans text-foreground antialiased">
         <I18nProvider messages={messages}>
           <CalDialogProvider>{children}</CalDialogProvider>
         </I18nProvider>

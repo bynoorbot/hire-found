@@ -5,7 +5,6 @@ import type { Messages } from "@/i18n/en";
 export function Markets() {
   const t: Messages = useI18n();
   const markets = t.markets;
-  const isRtl = t.dir === "rtl";
 
   return (
     <section id="markets" className="bg-warm-dark px-6 py-16 lg:py-20">

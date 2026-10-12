@@ -1,9 +1,13 @@
 "use client";
 
+import { useCallback, useRef, useState } from "react";
 import { CalendarIcon } from "lucide-react";
 import { useBookingModal } from "@/components/site/cal-dialog";
 import { DEFAULTS } from "@/lib/jobs/types";
 import { withBasePath } from "@/lib/base-path";
+import { cn } from "@/lib/utils";
+import { FooterButterfly } from "@/components/site/footer-butterfly";
+import { FooterPresenceBadge } from "@/components/site/footer-presence-badge";
 import { useI18n } from "@/components/site/i18n";
 
 const FOOTER_CONFIG = {
@@ -12,58 +16,120 @@ const FOOTER_CONFIG = {
   linkedIn: "https://www.linkedin.com/in/yasminblasi",
   instagram: "https://www.instagram.com/hirefound",
   email: DEFAULTS.email,
-  tagline: "Looking for a Hire? We've got you Found.",
-  italicTagline: "Find your match. Find your future.",
-  credit: { text: "by Noor", url: "https://bynoor.io" },
-  copyright: "© 2026 HireFound. All rights reserved.",
+  credit: { name: "Noor", url: "https://bynoor.io" },
 };
 
 const socialClass =
-  "inline-flex size-11 touch-manipulation items-center justify-center rounded-full border border-warm/35 text-warm select-none active:bg-warm/10";
+  "inline-flex size-11 touch-manipulation items-center justify-center rounded-full border border-linen/35 text-linen select-none transition-all duration-200 hover:border-linen/70 hover:bg-linen/10 hover:scale-105 active:scale-95 active:bg-linen/15";
 
 export function SiteFooter() {
   const t = useI18n();
   const { open } = useBookingModal();
   const whatsAppUrl = `https://wa.me/${FOOTER_CONFIG.whatsAppNumber}?text=${encodeURIComponent(FOOTER_CONFIG.whatsAppMessage)}`;
+  const footerRef = useRef<HTMLElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const jobsHref = t.locale === "ar" ? "/ar/jobs/" : "/jobs/";
+  const [headingMain, headingRest] = t.footer.heading.split("\n");
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLElement>) => {
+    const el = footerRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = Math.max(90, e.clientY - rect.top);
+    el.style.setProperty("--footer-x", `${x.toFixed(1)}px`);
+    el.style.setProperty("--footer-y", `${y.toFixed(1)}px`);
+  }, []);
 
   return (
     <footer
       id="contact"
-      className="bg-primary-dark px-6 pt-20 pb-[calc(5rem+env(safe-area-inset-bottom))] text-warm lg:pt-28"
+      ref={footerRef}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="group/footer relative overflow-hidden bg-primary-dark px-6 pt-20 pb-[calc(5rem+env(safe-area-inset-bottom))] text-linen lg:pt-28"
     >
-      <div className="mx-auto max-w-3xl text-center">
-        <h2 className="font-accent whitespace-pre-line text-4xl leading-[1.15] tracking-[-0.02em] text-balance md:text-5xl">
-          {t.footer.heading}
+      <div
+        className="pointer-events-none absolute inset-0 -z-0 overflow-hidden opacity-60"
+        aria-hidden="true"
+        style={{
+          maskImage: "linear-gradient(to bottom, transparent 0%, transparent 40px, black 160px)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, transparent 40px, black 160px)",
+        }}
+      >
+        <div
+          className="absolute left-1/2 top-12 size-[34rem] -translate-x-1/2 rounded-full opacity-20 blur-3xl"
+          style={{
+            background:
+              "radial-gradient(circle, #D4A574 0%, #7A1E4A 45%, transparent 70%)",
+          }}
+        />
+      </div>
+
+      <div
+        className={cn(
+          "pointer-events-none absolute inset-0 -z-0 transition-opacity duration-700 ease-out",
+          isHovered ? "opacity-75" : "opacity-0"
+        )}
+        style={{
+          background:
+            "radial-gradient(380px circle at var(--footer-x, 50%) var(--footer-y, 30%), rgba(212, 165, 116, 0.065), transparent 65%)",
+          maskImage: "linear-gradient(to bottom, transparent 0%, transparent 40px, black 160px)",
+          WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, transparent 40px, black 160px)",
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 mx-auto max-w-3xl text-center">
+        <div className="mb-4 flex items-center justify-center">
+          <FooterButterfly className="size-8 -rotate-6 transition-transform duration-300 hover:rotate-0" />
+        </div>
+
+        <h2 className="font-accent text-4xl leading-[1.15] tracking-[-0.02em] text-balance md:text-5xl">
+          {headingMain}
+          {headingRest ? (
+            <>
+              <br />
+              {headingRest}
+            </>
+          ) : null}
         </h2>
-        <p className="mt-4 text-lg text-warm/80">{t.footer.subheading}</p>
+        <p className="mt-4 text-lg text-linen/80">
+          {t.footer.subheading}
+        </p>
         <div
           className="mx-auto mt-6 h-px w-12 bg-secondary"
           aria-hidden="true"
         />
 
-        <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="mt-8 flex justify-center">
+          <FooterPresenceBadge href={whatsAppUrl} />
+        </div>
+
+        <div className="mt-6 flex items-center justify-center">
           <button
             type="button"
             id="footer-book-a-call"
             onClick={(e) => open(e.currentTarget)}
-            className="inline-flex min-h-12 w-full touch-manipulation items-center justify-center gap-2 rounded-full bg-warm px-7 text-base font-semibold text-primary select-none active:bg-warm-dark sm:w-auto"
+            className="inline-flex min-h-12 w-full touch-manipulation items-center justify-center gap-2 rounded-full bg-linen px-8 text-base font-semibold text-primary-dark select-none shadow-xs [transition:transform_160ms_cubic-bezier(0.23,1,0.32,1),background-color_160ms_ease-out] hover:bg-linen/95 active:scale-[0.97] active:bg-linen/90 sm:w-auto"
           >
             <CalendarIcon className="size-5" />
             {t.footer.bookCall}
           </button>
-          <a
-            href={whatsAppUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex min-h-12 w-full touch-manipulation items-center justify-center gap-2 rounded-full border border-warm/40 px-7 text-base font-semibold text-warm select-none active:bg-warm/10 sm:w-auto"
-          >
-            <svg className="size-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-            </svg>
-            {t.footer.chatWhatsApp}
-          </a>
         </div>
-        <p className="mt-5 text-sm text-warm/80">{t.footer.helper}</p>
+        <p className="mt-5 text-sm text-linen/80">
+          {t.footer.helper}
+        </p>
+        <p className="mt-2 text-xs text-linen/60">
+          {t.footer.helperSeekers}{" "}
+          <a
+            href={jobsHref}
+            className="underline decoration-linen/40 underline-offset-2 hover:text-linen"
+          >
+            {t.footer.browseAllRoles}
+          </a>
+        </p>
 
         <div className="mt-8 flex items-center justify-center gap-3">
           <a
@@ -110,32 +176,43 @@ export function SiteFooter() {
           </a>
         </div>
 
-        <div className="mt-16 border-t border-warm/20 pt-10">
-          <img
-            src={withBasePath("/assets/hirefound-signature.svg")}
-            alt="HireFound"
-            className="mx-auto mb-6 h-12 w-auto brightness-0 invert md:h-14"
-          />
-          <p className="text-lg text-warm/80">{t.footer.tagline}</p>
-          <p className="font-accent mt-2 text-base text-warm/70 italic">
+        <div className="mt-16 border-t border-linen/20 pt-10">
+          <div className="group relative mx-auto mb-6 inline-block">
+            <img
+              src={withBasePath("/assets/hirefound-signature.svg")}
+              alt="HireFound"
+              className="h-12 w-auto brightness-0 invert transition-all duration-300 md:h-14 group-hover:scale-105 group-hover:opacity-95"
+            />
+          </div>
+          <p className="text-lg text-linen/80">{t.footer.tagline}</p>
+          <p className="font-accent mt-2 text-base text-linen/70 italic">
             {t.footer.italicTagline}
           </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-6">
-            <p className="text-sm text-warm/80">
-              Built{" "}
+          <div className="mt-8 flex flex-col items-center justify-center gap-3 text-xs tracking-wide text-linen/55 sm:flex-row sm:gap-4">
+            <p className="group/heart inline-flex items-center gap-1.5 cursor-default select-none">
+              <span>{t.footer.builtWith}</span>
+              <svg
+                className="hf-heart-beat size-3.5 shrink-0 text-linen/75 transition-colors duration-250 ease-out group-hover/heart:text-butterfly-rose hover:text-butterfly-rose"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+              </svg>
+              <span className="sr-only">{t.footer.love}</span>
               <a
                 href={FOOTER_CONFIG.credit.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="underline decoration-warm/50 underline-offset-4 hover:text-warm"
+                className="font-medium text-linen/75 underline decoration-linen/35 underline-offset-4 transition-colors hover:text-linen hover:decoration-linen/60"
               >
-                {FOOTER_CONFIG.credit.text}
+                {t.footer.byCreditPattern.replace("{name}", FOOTER_CONFIG.credit.name)}
               </a>
             </p>
-            <span className="hidden text-warm/50 sm:inline" aria-hidden="true">
+            <span className="hidden text-linen/35 sm:inline" aria-hidden="true">
               ·
             </span>
-            <p className="text-sm text-warm/80">{t.footer.copyright}</p>
+            <p>{t.footer.copyright}</p>
           </div>
         </div>
       </div>

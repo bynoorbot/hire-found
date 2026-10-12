@@ -1,6 +1,7 @@
 export type Messages = {
   locale: "en" | "ar";
   dir: "ltr" | "rtl";
+  skipToContent: string;
   switcher: { toEn: string; toAr: string; ariaLabel: string };
   nav: {
     about: string;
@@ -8,6 +9,19 @@ export type Messages = {
     services: string;
     process: string;
     bookCall: string;
+    bookCallAria: string;
+    whatsapp: string;
+    chatWhatsApp: string;
+    forEmployers: string;
+    lookingForPositions: string;
+    browseOpenRoles: string;
+    openMenu: string;
+    closeMenu: string;
+    menu: string;
+    menuDescription: string;
+    sections: string;
+    goToTop: string;
+    goToHomepage: string;
     descriptors: {
       about: string;
       vacancies: string;
@@ -22,6 +36,14 @@ export type Messages = {
     ctaHiring: string;
     ctaExplore: string;
     facts: readonly string[];
+    founderBadge: string;
+    quote: string;
+    portraitAlt: string;
+    mandatesEyebrow: string;
+    region: string;
+    mandatesHeading: string;
+    mandatesBody: string;
+    pills: readonly string[];
   };
   about: {
     meetTheFounder: string;
@@ -30,33 +52,49 @@ export type Messages = {
     founderRole: string;
     p1: string;
     p2: string;
+    facts: readonly string[];
     pillars: readonly { title: string; body: string }[];
   };
   services: {
+    eyebrow: string;
     heading: string;
     subheading: string;
-    tabEmployers: string;
-    tabCandidates: string;
     employers: readonly { title: string; body: string }[];
-    candidates: readonly { title: string; body: string }[];
+    partnershipEyebrow: string;
+    partnershipHeading: string;
+    partnershipBody: string;
+    bookConsultation: string;
+    discussWhatsApp: string;
+    jobSeekerPrompt: string;
+    jobSeekerLink: string;
   };
   howItWorks: {
+    eyebrow: string;
     heading: string;
     subheading: string;
+    stepLabels: readonly string[];
     steps: readonly { title: string; body: string }[];
   };
   liveVacancies: {
     heading: string;
     subheading: string;
     all: string;
-    noneAll: string;
-    noneCategoryPattern: string;
-    interest: string;
-    bookCall: string;
+    quietHeading: string;
+    quietBody: string;
+    noneCategoryHeadingPattern: string;
+    noneCategoryBodyPattern: string;
+    showAll: string;
+    directoryPrompt: string;
+    viewAll: string;
+    filterAria: string;
+    loadingAria: string;
+    errorHeading: string;
+    errorBody: string;
+    checkAgain: string;
+    checking: string;
+    checkAgainAria: string;
+    checkingAria: string;
     whatsapp: string;
-    bridgeHeading: string;
-    bridgeBody: string;
-    bridgeCta: string;
   };
   footer: {
     heading: string;
@@ -65,17 +103,39 @@ export type Messages = {
     italicTagline: string;
     bookCall: string;
     chatWhatsApp: string;
+    chatAria: string;
     copyright: string;
     helper: string;
+    helperSeekers: string;
+    browseAllRoles: string;
+    builtWith: string;
+    love: string;
+    byCreditPattern: string;
   };
   cal: {
     title: string;
+    subtitle: string;
+    description: string;
     loading: string;
     unavailable: string;
     unavailableHint: string;
     bookOnCal: string;
     chatWhatsApp: string;
     emailYasmin: string;
+    closeAria: string;
+    iframeTitle: string;
+  };
+  actionStack: {
+    quickActions: string;
+    bookCall: string;
+    whatsapp: string;
+  };
+  notFound: {
+    eyebrow: string;
+    heading: string;
+    body: string;
+    backHome: string;
+    exploreRoles: string;
   };
   markets: {
     heading: string;
@@ -105,6 +165,7 @@ export type Messages = {
 export const en: Messages = {
   locale: "en",
   dir: "ltr",
+  skipToContent: "Skip to content",
   switcher: {
     toEn: "English",
     toAr: "العربية",
@@ -116,25 +177,53 @@ export const en: Messages = {
     services: "Services",
     process: "Process",
     bookCall: "Book a Call",
+    bookCallAria: "Book an executive hiring consultation with Yasmin",
+    whatsapp: "WhatsApp",
+    chatWhatsApp: "Chat on WhatsApp",
+    forEmployers: "For Employers",
+    lookingForPositions: "Looking for open positions?",
+    browseOpenRoles: "Browse open roles",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    menu: "Menu",
+    menuDescription: "Site sections and booking.",
+    sections: "Sections",
+    goToTop: "HireFound - Go to top",
+    goToHomepage: "HireFound - Go to homepage",
     descriptors: {
       about: "The founder and the matchmaking standard",
       vacancies: "Open roles across Jordan and the Gulf",
-      services: "Hiring support and career matchmaking",
+      services: "Executive search and hiring solutions",
       process: "From first call to first day",
     },
   },
   hero: {
     byline: "by Yasmin Blasi",
     tagline: "You want a hire? We got you found.",
-    subline: "Matchmakers for meaningful careers across Jordan and the Gulf.",
+    subline:
+      "Executive search and culture-first hiring across Jordan and the Gulf.",
     ctaHiring: "I'm Hiring Executive Talent",
     ctaExplore: "Explore Open Roles",
     facts: [
       "Direct Founder Access",
-      "10+ years of experience",
-      "MENA region",
+      "10+ Years of Experience",
+      "MENA Region",
       "Junior to C-Suite",
       "TEDx Speaker",
+    ] as const,
+    founderBadge: "Founder",
+    quote:
+      "Fewer seats filled, more lasting matches, and a direct line to the person you actually book.",
+    portraitAlt: "Yasmin Blasi, founder of HireFound",
+    mandatesEyebrow: "Executive Mandates",
+    region: "Jordan & The Gulf",
+    mandatesHeading: "Practice Areas & Executive Mandates",
+    mandatesBody:
+      "C-Suite & Board Appointments, Headhunting & Retained Search, and Behavioral Profiling for leadership teams.",
+    pills: [
+      "Executive Retainers",
+      "C-Suite & Board",
+      "DISC Profiling",
     ] as const,
   },
   about: {
@@ -144,6 +233,12 @@ export const en: Messages = {
     founderRole: "Founder & Executive Matchmaker",
     p1: "Yasmin Blasi spent a decade in HR and recruitment: talent acquisition, senior leadership, coaching executives, and reading thousands of CVs across Jordan and the broader MENA region.",
     p2: "HireFound is the practice she built after leaving corporate HR: fewer seats filled, more lasting matches, and a direct line to the person you actually book.",
+    facts: [
+      "10+ years of experience",
+      "MENA region",
+      "Junior to C-suite",
+      "TEDx speaker",
+    ] as const,
     pillars: [
       {
         title: "Matchmaking, Not Seat-Filling",
@@ -160,10 +255,10 @@ export const en: Messages = {
     ] as const,
   },
   services: {
-    heading: "How Can I Help?",
-    subheading: "Whether you're building a team or building a career.",
-    tabEmployers: "For Employers",
-    tabCandidates: "For Candidates",
+    eyebrow: "Employer Services",
+    heading: "How I Help Companies Hire",
+    subheading:
+      "Boutique executive search, talent recruitment, and leadership assessments across Jordan and the Gulf.",
     employers: [
       {
         title: "Executive Search & Headhunting",
@@ -171,61 +266,66 @@ export const en: Messages = {
       },
       {
         title: "Recruitment & Job Matching",
-        body: "From junior to senior, across industries. I handle sourcing, screening, and matching, so you just meet the finalists.",
+        body: "From specialized individual contributors to department heads. I handle sourcing, rigorous screening, and culture matching, so you just meet the finalists.",
       },
       {
         title: "DISC Assessments",
-        body: "Understand how your candidates think, communicate, and work. Better insights mean better hires that stick.",
+        body: "Understand how your candidates think, communicate, and lead. Certified behavioral insights mean better hires that stick long-term.",
       },
     ] as const,
-    candidates: [
-      {
-        title: "Career Matchmaking",
-        body: "Tell me where you want to go. I'll find the opportunities that actually match: not just what's available, but what's right.",
-      },
-      {
-        title: "CV Optimization",
-        body: "Your CV should tell your story, not just list your jobs. I'll help you make it impossible to ignore.",
-      },
-      {
-        title: "Interview Preparation",
-        body: "Nervous? Don't be. We'll practice until you walk in there owning the room. I know what they're looking for.",
-      },
-    ] as const,
+    partnershipEyebrow: "Direct Partnership",
+    partnershipHeading: "Have an open role or leadership search?",
+    partnershipBody:
+      "Book a discovery call directly with Yasmin to review your mandate, culture, and hiring timeline.",
+    bookConsultation: "Book Consultation",
+    discussWhatsApp: "Discuss on WhatsApp",
+    jobSeekerPrompt: "Looking for open roles? Explore all active positions on our",
+    jobSeekerLink: "Open Roles board",
   },
   howItWorks: {
+    eyebrow: "The Matchmaking Process",
     heading: "How It Works",
     subheading: "Three steps. One promise: I'll find your match.",
+    stepLabels: ["Step 01", "Step 02", "Step 03"] as const,
     steps: [
       {
         title: "We Talk",
-        body: "Tell me everything. The role, the culture, the dream. I listen like it matters, because it does.",
+        body: "Tell me everything: the mandate, the leadership dynamic, the vision. I listen like it matters, because it does.",
       },
       {
         title: "We Match",
-        body: "I go find your person. Not the most available, but the most right.",
+        body: "Discreet headhunting, cultural vetting, and DISC behavioral profiling. You only meet vetted finalists who fit.",
       },
       {
         title: "You Grow",
-        body: "The hire sticks. The career takes off. And I'm still just a message away.",
+        body: "The hire sticks. The leadership team gains momentum. And I stay closely connected for ongoing retention.",
       },
     ] as const,
   },
   liveVacancies: {
     heading: "Find Your Match",
     subheading:
-      "Open roles I'm hiring for right now. Something catch your eye? Let's talk.",
+      "Roles I'm actively matching for. If one feels right, let's talk.",
     all: "All",
-    noneAll: "No open roles right now",
-    noneCategoryPattern: "No jobs available in {category}",
-    interest:
-      "Interested in opportunities? Reach out directly. I'd love to hear from you.",
-    bookCall: "Book a Call",
+    quietHeading: "Quiet on the board",
+    quietBody: "New openings show up here as they come in. Check back soon.",
+    noneCategoryHeadingPattern: "Nothing in {category} just yet",
+    noneCategoryBodyPattern:
+      "There are currently no active openings filed under {category}.",
+    showAll: "Show all active roles",
+    directoryPrompt:
+      "Looking for a different role or city? Browse the full directory.",
+    viewAll: "View All Open Roles",
+    filterAria: "Filter jobs by category",
+    loadingAria: "Loading open roles",
+    errorHeading: "The board is taking a breath",
+    errorBody:
+      "We are having trouble connecting to live roles right now. Give it a moment, or try checking again below.",
+    checkAgain: "Check again",
+    checking: "Checking...",
+    checkAgainAria: "Check again for open roles",
+    checkingAria: "Checking for open roles",
     whatsapp: "WhatsApp",
-    bridgeHeading: "Looking for more than a job listing?",
-    bridgeBody:
-      "Get your CV rewritten, nail your next interview, or let me personally match you with your dream role.",
-    bridgeCta: "Explore Career Services",
   },
   footer: {
     heading: "Your next game-changer is\njust a conversation away.",
@@ -234,12 +334,20 @@ export const en: Messages = {
     italicTagline: "Find your match. Find your future.",
     bookCall: "Book a Call",
     chatWhatsApp: "Chat on WhatsApp",
+    chatAria: "Chat with Yasmin Blasi on WhatsApp",
     copyright: "© 2026 HireFound. All rights reserved.",
     helper:
-      "Book a call for a set time, or message me on WhatsApp if you prefer chat.",
+      "Employers: Book a discovery call, or message me directly on WhatsApp.",
+    helperSeekers: "Looking for open positions?",
+    browseAllRoles: "Browse all open roles",
+    builtWith: "Built with",
+    love: "love",
+    byCreditPattern: "by {name}",
   },
   cal: {
-    title: "Book a Call with Yasmin",
+    title: "Book an Executive Consultation",
+    subtitle: "For founders, CEOs & hiring leaders",
+    description: "Choose a time to talk with Yasmin about executive hiring.",
     loading: "Loading calendar...",
     unavailable: "Calendar unavailable",
     unavailableHint:
@@ -247,6 +355,20 @@ export const en: Messages = {
     bookOnCal: "Book on Cal.com",
     chatWhatsApp: "Chat on WhatsApp",
     emailYasmin: "Email Yasmin",
+    closeAria: "Close booking",
+    iframeTitle: "Book a call with Yasmin on Cal.com",
+  },
+  actionStack: {
+    quickActions: "Quick actions",
+    bookCall: "Book a Call",
+    whatsapp: "WhatsApp",
+  },
+  notFound: {
+    eyebrow: "Error 404",
+    heading: "Off the Beaten Track",
+    body: "The page you are looking for has moved or does not exist. Let us guide you back to open roles and executive matchmaking.",
+    backHome: "Back to Home",
+    exploreRoles: "Explore Open Roles",
   },
   markets: {
     heading: "Markets we hire for",
@@ -288,4 +410,3 @@ export const en: Messages = {
     },
   },
 };
-
