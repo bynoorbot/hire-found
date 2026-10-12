@@ -32,7 +32,7 @@ const NAV_ITEMS = [
   },
   {
     label: "Services",
-    descriptor: "Hiring support and career matchmaking",
+    descriptor: "Executive search and hiring solutions",
     homepageHref: "#services",
     otherHref: "/#services",
     sectionId: "services",
@@ -103,21 +103,21 @@ function useActiveSection(onHomepage: boolean) {
 
 const desktopLinkClass = (active: boolean) =>
   cn(
-    "inline-flex min-h-10 touch-manipulation items-center rounded-full px-4 text-sm font-semibold transition-all duration-200 select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
+    "inline-flex min-h-10 touch-manipulation items-center rounded-full px-4 text-sm font-semibold [transition:transform_160ms_cubic-bezier(0.23,1,0.32,1),background-color_160ms_ease-out] active:scale-[0.97] select-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary",
     active
-      ? "bg-primary text-warm shadow-warm"
-      : "text-muted hover:bg-primary/5 hover:text-primary active:scale-[0.98]",
+      ? "bg-primary text-primary-foreground shadow-warm"
+      : "text-muted hover:bg-primary/5 hover:text-primary",
   );
 
 const desktopBookClass =
-  "group inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-warm shadow-warm select-none transition-all duration-200 hover:bg-primary-light hover:shadow-glow active:scale-[0.98] active:bg-primary-dark";
+  "group inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-full bg-primary px-5 text-sm font-semibold text-primary-foreground shadow-warm select-none [transition:transform_160ms_cubic-bezier(0.23,1,0.32,1),background-color_160ms_ease-out] hover:bg-primary-light hover:shadow-glow active:scale-[0.97] active:bg-primary-dark";
 
 const mobileCardClass = (active: boolean) =>
   cn(
     "group flex items-center gap-4 rounded-3xl border p-4 transition-all duration-200 active:scale-[0.99]",
     active
-      ? "border-primary bg-primary text-warm shadow-warm"
-      : "border-primary/10 bg-white/80 hover:border-primary/25 hover:shadow-card",
+      ? "border-primary bg-primary text-primary-foreground shadow-warm"
+      : "border-primary/10 bg-card/80 hover:border-primary/25 hover:shadow-card",
   );
 
 export function SiteNav() {
@@ -192,7 +192,7 @@ export function SiteNav() {
               type="button"
               id="nav-book-a-call-desktop"
               className={desktopBookClass}
-              aria-label="Book a Call"
+              aria-label="Book an executive hiring consultation with Yasmin"
               onClick={(e) => open(e.currentTarget)}
             >
               <CalendarIcon className="size-4" aria-hidden="true" />
@@ -203,7 +203,7 @@ export function SiteNav() {
           <button
             ref={menuButtonRef}
             type="button"
-            className="inline-flex size-11 touch-manipulation items-center justify-center rounded-full border border-primary/15 bg-white/70 text-primary select-none transition-all duration-200 active:scale-[0.98] active:bg-primary/10 md:hidden"
+            className="inline-flex size-11 touch-manipulation items-center justify-center rounded-full border border-primary/15 bg-card/70 text-primary select-none transition-all duration-200 active:scale-[0.98] active:bg-primary/10 md:hidden"
             aria-haspopup="dialog"
             aria-expanded={menuOpen}
             aria-controls="mobile-nav"
@@ -217,11 +217,11 @@ export function SiteNav() {
 
       <DialogPrimitive.Root open={menuOpen} onOpenChange={setMenuOpen}>
         <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="fixed inset-0 z-[60] bg-text-main/50 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+          <DialogPrimitive.Overlay className="fixed inset-0 z-[60] bg-black/50 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
           <DialogPrimitive.Content
             id="mobile-nav"
             aria-describedby="mobile-nav-description"
-            className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+0.5rem)] bottom-[calc(env(safe-area-inset-bottom)+0.5rem)] z-[60] flex flex-col overflow-hidden rounded-[2rem] border border-primary/10 bg-warm shadow-card-hover outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 sm:inset-y-0 sm:top-[calc(env(safe-area-inset-top)+0.5rem)] sm:right-3 sm:bottom-[calc(env(safe-area-inset-bottom)+0.5rem)] sm:left-auto sm:w-[24rem] sm:data-open:slide-in-from-right-4 sm:data-closed:slide-out-to-right-4"
+            className="fixed inset-x-3 top-[calc(env(safe-area-inset-top)+0.5rem)] bottom-[calc(env(safe-area-inset-bottom)+0.5rem)] z-[60] flex flex-col overflow-hidden rounded-[2rem] border border-primary/10 bg-background shadow-card-hover outline-none data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95 sm:inset-y-0 sm:top-[calc(env(safe-area-inset-top)+0.5rem)] sm:right-3 sm:bottom-[calc(env(safe-area-inset-bottom)+0.5rem)] sm:left-auto sm:w-[24rem] sm:data-open:slide-in-from-right-4 sm:data-closed:slide-out-to-right-4"
           >
             <div className="flex h-16 shrink-0 items-center justify-between border-b border-primary/10 pr-2 pl-5">
               <img
@@ -279,7 +279,7 @@ export function SiteNav() {
                         <span
                           className={cn(
                             "font-accent w-8 shrink-0 text-sm",
-                            active ? "text-warm/80" : "text-secondary",
+                            active ? "text-primary-foreground/80" : "text-secondary",
                           )}
                           aria-hidden="true"
                         >
@@ -292,7 +292,7 @@ export function SiteNav() {
                           <span
                             className={cn(
                               "mt-1 block text-sm leading-snug",
-                              active ? "text-warm/80" : "text-muted",
+                              active ? "text-primary-foreground/80" : "text-muted",
                             )}
                           >
                             {item.descriptor}
@@ -302,7 +302,7 @@ export function SiteNav() {
                           className={cn(
                             "inline-flex size-9 shrink-0 items-center justify-center rounded-full transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5",
                             active
-                              ? "bg-warm/20 text-warm"
+                              ? "bg-primary-foreground/20 text-primary-foreground"
                               : "bg-primary/5 text-primary",
                           )}
                           aria-hidden="true"
@@ -316,7 +316,10 @@ export function SiteNav() {
               </ul>
             </div>
 
-            <div className="shrink-0 border-t border-primary/10 bg-warm/95 px-4 pt-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:px-5">
+            <div className="shrink-0 border-t border-primary/10 bg-background/95 px-4 pt-4 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:px-5">
+              <p className="mb-2.5 text-[11px] font-bold tracking-[0.14em] text-muted uppercase">
+                For Employers
+              </p>
               <button
                 type="button"
                 id="nav-book-a-call-mobile"
@@ -347,6 +350,16 @@ export function SiteNav() {
                 </svg>
                 Chat on WhatsApp
               </a>
+              <p className="mt-4 text-center text-xs text-muted">
+                Looking for open positions?{" "}
+                <Link
+                  href={onHomepage ? "#vacancies" : "/jobs/"}
+                  onClick={() => setMenuOpen(false)}
+                  className="font-semibold text-primary underline decoration-primary/40 underline-offset-2 hover:text-primary-light"
+                >
+                  Browse open roles
+                </Link>
+              </p>
             </div>
           </DialogPrimitive.Content>
         </DialogPrimitive.Portal>

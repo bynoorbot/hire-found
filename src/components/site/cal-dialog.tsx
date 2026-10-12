@@ -14,6 +14,7 @@ import { Dialog as DialogPrimitive } from "radix-ui";
 import { ArrowUpRightIcon, XIcon } from "lucide-react";
 import { DEFAULTS } from "@/lib/jobs/types";
 import { withBasePath } from "@/lib/base-path";
+import { PhoneDirectLineIllustration } from "@/components/illustrations";
 
 type BookingModalContextValue = {
   open: (trigger?: HTMLElement | null) => void;
@@ -61,11 +62,13 @@ export function CalDialog({
   onOpenChange,
   status,
   onFrameLoad,
+  vtName,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   status: LoadStatus;
   onFrameLoad: () => void;
+  vtName?: string | null;
 }) {
   const embedSrc = calEmbedSrc(DEFAULTS.calLink);
   const whatsAppUrl = `https://wa.me/${DEFAULTS.whatsApp}?text=${encodeURIComponent("Hi Yasmin! I found you through your website.")}`;
@@ -73,11 +76,18 @@ export function CalDialog({
   return (
     <DialogPrimitive.Root open={open} onOpenChange={onOpenChange}>
       <DialogPrimitive.Portal>
-        <DialogPrimitive.Overlay className="fixed inset-0 z-[70] bg-text-main/55 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
+        <DialogPrimitive.Overlay className="fixed inset-0 z-[70] bg-black/55 data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0" />
         <DialogPrimitive.Content
           id="booking-modal"
           aria-describedby="booking-modal-description"
-          className="fixed inset-0 z-[70] flex h-dvh max-h-dvh w-full flex-col overflow-hidden bg-warm pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] outline-none data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:h-auto sm:max-h-[min(92dvh,840px)] sm:w-[min(calc(100%-2rem),44rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:card-surface sm:pt-0 sm:pb-0 sm:data-open:zoom-in-95 sm:data-closed:zoom-out-95"
+          className="fixed inset-0 z-[70] flex h-dvh max-h-dvh w-full flex-col overflow-hidden bg-background pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] outline-none data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:h-auto sm:max-h-[min(92dvh,840px)] sm:w-[min(calc(100%-2rem),44rem)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:card-surface sm:pt-0 sm:pb-0 sm:data-open:zoom-in-95 sm:data-closed:zoom-out-95"
+          style={
+            vtName
+              ? ({
+                  viewTransitionName: vtName,
+                } as React.CSSProperties)
+              : undefined
+          }
         >
           <div className="flex h-16 shrink-0 items-center gap-3 border-b border-primary/10 pr-[max(0.5rem,env(safe-area-inset-right))] pl-[max(1rem,env(safe-area-inset-left))]">
             <img
@@ -85,17 +95,22 @@ export function CalDialog({
               alt=""
               className="size-10 rounded-full object-cover"
             />
-            <DialogPrimitive.Title
-              id="booking-modal-title"
-              className="font-accent flex-1 text-lg text-primary"
-            >
-              Book a Call with Yasmin
-            </DialogPrimitive.Title>
+            <div className="min-w-0 flex-1">
+              <DialogPrimitive.Title
+                id="booking-modal-title"
+                className="font-accent text-base sm:text-lg leading-tight text-primary"
+              >
+                Book an Executive Consultation
+              </DialogPrimitive.Title>
+              <p className="text-xs text-muted">
+                For founders, CEOs & hiring leaders
+              </p>
+            </div>
             <DialogPrimitive.Close asChild>
               <button
                 id="booking-close-btn"
                 type="button"
-                className="inline-flex size-11 touch-manipulation items-center justify-center rounded-full text-text-main select-none active:bg-primary/10"
+                className="inline-flex size-11 touch-manipulation items-center justify-center rounded-full text-text-main select-none transition-transform duration-150 active:scale-95 active:bg-primary/10"
                 aria-label="Close booking"
               >
                 <XIcon className="size-5" />
@@ -106,14 +121,17 @@ export function CalDialog({
             id="booking-modal-description"
             className="sr-only"
           >
-            Choose a time to talk with Yasmin about hiring.
+            Choose a time to talk with Yasmin about executive hiring.
           </DialogPrimitive.Description>
           <div className="relative min-h-0 flex-1">
             {status === "error" ? (
               <div
                 id="booking-error"
-                className="flex flex-col items-center justify-center px-6 py-16 text-center"
+                className="flex flex-col items-center justify-center px-6 py-12 text-center"
               >
+                <div className="mb-3">
+                  <PhoneDirectLineIllustration width={140} height={120} />
+                </div>
                 <p className="font-accent text-xl text-text-main">
                   Calendar unavailable
                 </p>
@@ -126,7 +144,7 @@ export function CalDialog({
                     href={DEFAULTS.calLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-warm select-none active:bg-primary-dark"
+                    className="inline-flex min-h-11 touch-manipulation items-center justify-center gap-2 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground select-none transition-transform duration-150 active:scale-95 active:bg-primary-dark"
                   >
                     Book on Cal.com
                     <ArrowUpRightIcon className="size-4" />
@@ -135,13 +153,13 @@ export function CalDialog({
                     href={whatsAppUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex min-h-11 touch-manipulation items-center justify-center rounded-full border border-primary/20 px-6 text-sm font-semibold text-primary select-none active:bg-primary/10"
+                    className="inline-flex min-h-11 touch-manipulation items-center justify-center rounded-full border border-primary/20 px-6 text-sm font-semibold text-primary select-none transition-transform duration-150 active:scale-95 active:bg-primary/10"
                   >
                     Chat on WhatsApp
                   </a>
                   <a
                     href={`mailto:${DEFAULTS.email}`}
-                    className="inline-flex min-h-11 touch-manipulation items-center justify-center rounded-full border border-primary/20 px-6 text-sm font-semibold text-primary select-none active:bg-primary/10"
+                    className="inline-flex min-h-11 touch-manipulation items-center justify-center rounded-full border border-primary/20 px-6 text-sm font-semibold text-primary select-none transition-transform duration-150 active:scale-95 active:bg-primary/10"
                   >
                     Email Yasmin
                   </a>
@@ -152,10 +170,11 @@ export function CalDialog({
                 {status === "loading" ? (
                   <div
                     id="booking-loading"
-                    className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-warm"
+                    className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-background"
                   >
                     <div
                       className="size-10 rounded-full border-2 border-primary/20 border-t-primary motion-safe:animate-spin"
+                      style={{ animationDuration: "0.65s" }}
                       aria-hidden="true"
                     />
                     <p className="mt-4 text-sm text-muted">
@@ -198,6 +217,7 @@ export function CalDialogProvider({ children }: { children: ReactNode }) {
   const [status, setStatus] = useState<LoadStatus>("loading");
   const triggerRef = useRef<HTMLElement | null>(null);
   const loadedRef = useRef(false);
+  const [vtName, setVtName] = useState<string | null>(null);
 
   const restoreFocus = useCallback(() => {
     focusBookingReturn(triggerRef.current);
@@ -205,6 +225,7 @@ export function CalDialogProvider({ children }: { children: ReactNode }) {
 
   const close = useCallback(() => {
     setIsOpen(false);
+    setVtName(null);
     queueMicrotask(restoreFocus);
   }, [restoreFocus]);
 
@@ -216,7 +237,25 @@ export function CalDialogProvider({ children }: { children: ReactNode }) {
         : null);
     loadedRef.current = false;
     setStatus("loading");
-    setIsOpen(true);
+    const reduce =
+      window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    const supportsVT = typeof document.startViewTransition === "function";
+    const willVt = supportsVT && !reduce && !!triggerRef.current;
+    if (willVt) {
+      // Shared element name for CTA → dialog morph
+      setVtName("booking-cta");
+      try {
+        (triggerRef.current as HTMLElement).style.viewTransitionName =
+          "booking-cta";
+      } catch {
+        // Ignore
+      }
+      document.startViewTransition?.(() => {
+        setIsOpen(true);
+      });
+    } else {
+      setIsOpen(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -256,6 +295,7 @@ export function CalDialogProvider({ children }: { children: ReactNode }) {
         onOpenChange={onOpenChange}
         status={status}
         onFrameLoad={onFrameLoad}
+        vtName={vtName}
       />
     </BookingModalContext.Provider>
   );

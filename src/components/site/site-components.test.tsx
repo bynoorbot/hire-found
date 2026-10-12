@@ -222,30 +222,91 @@ describe("Phase 3 Site Components Parity", () => {
       expect(container.querySelector('a[href*="instagram.com"]')).not.toBeNull();
       expect(container.querySelector('a[href*="mailto:yasmin@hirefound.com"]')).not.toBeNull();
     });
-  });
 
-  describe("LiveVacancies", () => {
-    it("renders jobs, category filters, and a Career Bridge to services", async () => {
+    it("renders employer consultation helper and job seeker link in footer", async () => {
       await act(async () => {
         root.render(
           <CalDialogProvider>
-            <LiveVacancies />
+            <SiteFooter />
           </CalDialogProvider>,
         );
+      });
+
+      const footer = container.querySelector("footer#contact");
+      expect(footer?.textContent).toContain(
+        "Employers: Book a discovery call, or message me directly on WhatsApp.",
+      );
+      expect(footer?.textContent).toContain("Yasmin Blasi");
+      expect(footer?.textContent).toContain("Chat on WhatsApp");
+      expect(footer?.querySelector(".hf-butterfly-drift")).not.toBeNull();
+      expect(footer?.querySelector(".hf-heart-beat")).not.toBeNull();
+      expect(footer?.querySelector(".hf-heart-beat")?.getAttribute("class")).toContain("text-linen/75");
+      expect(footer?.textContent).toContain("Looking for open positions?");
+      expect(footer?.querySelector('a[href="/jobs/"]')).not.toBeNull();
+    });
+  });
+
+  describe("LiveVacancies", () => {
+    it("renders jobs and category filters", async () => {
+      await act(async () => {
+        root.render(<LiveVacancies />);
       });
 
       // Filter pills should be rendered when multiple categories exist
       const pills = container.querySelectorAll(".filter-pill");
       expect(pills.length).toBeGreaterThanOrEqual(2); // "All", "Hospitality", "Tech"
 
-      // Career bridge link
-      const careerBridge = container.querySelector(".career-bridge");
-      expect(careerBridge).not.toBeNull();
-      expect(careerBridge?.getAttribute("href")).toBe("#services");
-
       // Job titles
       expect(container.textContent).toContain("Senior Barista");
       expect(container.textContent).toContain("Frontend Engineer");
+    });
+
+    it("does not offer speculative WhatsApp CV outreach when no jobs match or board is empty", async () => {
+      fetchJobsMock.mockResolvedValueOnce([]);
+      await act(async () => {
+        root.render(<LiveVacancies />);
+      });
+
+      expect(container.textContent).toContain("Quiet on the board");
+      expect(container.textContent).not.toContain("Submit CV");
+      const emptyGrid = container.querySelector("#vacancy-grid");
+      expect(emptyGrid?.querySelector('a[href*="wa.me"]')).toBeNull();
+    });
+
+    it("renders board pause state when jobs fetch fails and allows reloading", async () => {
+      fetchJobsMock
+        .mockRejectedValueOnce(new Error("network error"))
+        .mockResolvedValueOnce([
+          {
+            id: "barista-1",
+            title: "Senior Barista",
+            slug: "senior-barista",
+            category: "hospitality",
+            location: "Amman, Jordan",
+            employmentType: "full-time",
+            isActive: true,
+          },
+        ]);
+
+      await act(async () => {
+        root.render(<LiveVacancies />);
+      });
+
+      expect(container.textContent).toContain("The board is taking a breath");
+      expect(container.textContent).toContain(
+        "We are having trouble connecting to live roles right now",
+      );
+
+      const checkAgainBtn = container.querySelector(
+        'button[aria-label="Check again for open roles"]',
+      ) as HTMLButtonElement;
+      expect(checkAgainBtn).not.toBeNull();
+
+      await act(async () => {
+        checkAgainBtn.click();
+      });
+
+      expect(container.textContent).toContain("Senior Barista");
     });
   });
 
@@ -316,6 +377,27 @@ describe("Phase 3 Site Components Parity", () => {
       expect(document.getElementById("booking-modal")).toBeNull();
       expect(document.activeElement).toBe(trigger);
       interval.mockRestore();
+    });
+
+    it("displays executive consultation title and does not show job seeker banner", async () => {
+      await act(async () => {
+        root.render(
+          <CalDialogProvider>
+            <TestTrigger />
+          </CalDialogProvider>,
+        );
+      });
+
+      const trigger = container.querySelector("#test-open") as HTMLButtonElement;
+      await act(async () => {
+        trigger.click();
+      });
+
+      const modal = document.getElementById("booking-modal");
+      expect(modal?.textContent).toContain("Book an Executive Consultation");
+      expect(modal?.textContent).toContain("For founders, CEOs & hiring leaders");
+      expect(modal?.textContent).not.toContain("Job seeker?");
+      expect(modal?.textContent).not.toContain("browse our open roles");
     });
   });
 });

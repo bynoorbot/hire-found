@@ -78,7 +78,7 @@ const KIND_META: Record<
 };
 
 const cardClass =
-  "group flex h-full min-h-0 w-full flex-col rounded-2xl border border-secondary/30 bg-white/80 p-6 shadow-xs backdrop-blur-xs transition-all duration-300 motion-reduce:transition-none hover:bg-white hover:shadow-card lg:min-h-[19rem]";
+  "card-interactive-sheen group flex h-full min-h-0 w-full flex-col rounded-2xl border border-secondary/30 bg-card/80 p-6 shadow-xs backdrop-blur-xs motion-reduce:transition-none hover:bg-card lg:min-h-[19rem]";
 
 function AppearanceBody({ item }: { item: Appearance }) {
   const { label, Icon } = KIND_META[item.kind];
@@ -122,13 +122,20 @@ export function SpeakingMedia() {
     <section
       id="speaking-media"
       aria-labelledby="speaking-media-heading"
-      className="bg-warm-dark px-6 py-20 lg:py-28"
+      className="relative px-6 py-20 lg:py-28"
     >
+      <div
+        className="section-divider mx-auto mb-16 max-w-6xl opacity-50"
+        aria-hidden="true"
+      />
       <div className="mx-auto max-w-6xl">
         <div className="max-w-3xl">
+          <span className="text-xs font-semibold tracking-[0.14em] text-secondary uppercase">
+            On stage and on air
+          </span>
           <h2
             id="speaking-media-heading"
-            className="font-accent text-4xl tracking-[-0.02em] text-balance text-primary md:text-5xl"
+            className="font-accent mt-2 text-4xl tracking-[-0.02em] text-balance text-primary md:text-5xl"
           >
             Speaking & Media
           </h2>
